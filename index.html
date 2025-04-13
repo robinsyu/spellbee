@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpellingBee - Word Puzzle Game | Make Words From Letters | SpellBee.one</title>
+    <meta name="description" content="Play SpellingBee online! Create words from 7 letters, always including the central letter. Perfect for word lovers and vocabulary building. Free to play daily!">
+    <link rel="canonical" href="https://spellbee.one/">
+    <meta name="keywords" content="spelling bee game, word puzzle, word game, vocabulary game, spelling game, letter game, word building game">
+    <meta property="og:title" content="SpellingBee - Word Puzzle Game | SpellBee.one">
+    <meta property="og:description" content="Create words from letters with this addictive word puzzle game. Each word must include the central letter!">
+    <meta property="og:url" content="https://spellbee.one/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://spellbee.one/images/spelling-bee-preview.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&family=Patrick+Hand&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-color: #f7da21;
+            --accent-color: #333;
+            --text-color: #222;
+            --light-bg: #f9f7f0;
+            --border-color: #ddd;
+        }
+        
+        body {
+            font-family: 'Patrick Hand', cursive;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Indie Flower', cursive;
+            font-weight: bold;
+        }
+        
+        .container {
+            max-width: 1000px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+            color: var(--accent-color);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #555;
+        }
+        
+        .bee-hive {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin: 2rem 0;
+        }
+        
+        .hive-row {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .hive-cell {
+            width: 70px;
+            height: 70px;
+            margin: 0 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            border: 2px solid #333;
+            border-radius: 10px;
+            cursor: pointer;
+            background-color: #f5f5f5;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hive-cell:hover {
+            transform: translateY(-5px);
+        }
+        
+        .hive-cell.center {
+            background-color: var(--main-color);
+        }
+        
+        .hive-cell::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%);
+            pointer-events: none;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 1.5rem 0;
+        }
+        
+        .btn {
+            font-family: 'Patrick Hand', cursive;
+            padding: 8px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #333;
+            border-radius: 8px;
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.15);
+        }
+        
+        .btn-yellow {
+            background-color: var(--main-color);
+            color: #333;
+        }
+        
+        .btn-dark {
+            background-color: #333;
+            color: #fff;
+        }
+        
+        .input-word {
+            width: 100%;
+            max-width: 500px;
+            margin: 1rem auto;
+            padding: 12px 20px;
+            font-size: 1.3rem;
+            text-align: center;
+            border: 2px solid #333;
+            border-radius: 8px;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+            font-family: 'Patrick Hand', cursive;
+        }
+        
+        .word-list {
+            background: #fff;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.1);
+            min-height: 200px;
+        }
+        
+        .word-list h3 {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .found-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .word-item {
+            background-color: #f0f0f0;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 1rem;
+            border: 1px dashed #999;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        
+        .score-box {
+            background: #fff;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 10px 20px;
+            min-width: 120px;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+        }
+        
+        .score-box h4 {
+            margin: 0;
+            font-size: 1rem;
+        }
+        
+        .score-box .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .rank {
+            color: var(--main-color);
+            text-shadow: 1px 1px 0 #333;
+        }
+        
+        .message {
+            text-align: center;
+            color: #d9534f;
+            font-size: 1.2rem;
+            min-height: 50px;
+            margin: 1rem 0;
+        }
+        
+        .rules {
+            margin: 3rem 0;
+            padding: 2rem;
+            background: #fff;
+            border: 2px solid #333;
+            border-radius: 12px;
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.1);
+        }
+        
+        .rules h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1.5rem 0;
+            border-top: 2px solid var(--border-color);
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hive-cell {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+            }
+            
+            .score-box {
+                width: 80%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>SpellingBee Online</h1>
+            <p>Combine letters to make words!</p>
+        </header>
+
+        <main>
+            <div class="bee-hive">
+                <div class="hive-row">
+                    <div class="hive-cell" data-letter="P">P</div>
+                </div>
+                <div class="hive-row">
+                    <div class="hive-cell" data-letter="L">L</div>
+                    <div class="hive-cell center" data-letter="E">E</div>
+                    <div class="hive-cell" data-letter="A">A</div>
+                </div>
+                <div class="hive-row">
+                    <div class="hive-cell" data-letter="S">S</div>
+                    <div class="hive-cell" data-letter="N">N</div>
+                    <div class="hive-cell" data-letter="T">T</div>
+                </div>
+            </div>
+            
+            <div class="input-container text-center">
+                <input type="text" class="input-word" id="wordInput" placeholder="Type your word..." autocomplete="off">
+            </div>
+
+            <div class="message" id="message"></div>
+            
+            <div class="controls">
+                <button class="btn btn-yellow" id="enterBtn">Enter</button>
+                <button class="btn" id="deleteBtn">Delete</button>
+                <button class="btn" id="shuffleBtn">Shuffle</button>
+                <button class="btn btn-dark" id="hintsBtn">Hints</button>
+            </div>
+            
+            <div class="stats">
+                <div class="score-box">
+                    <h4>Score</h4>
+                    <div class="value" id="score">0</div>
+                </div>
+                <div class="score-box">
+                    <h4>Words</h4>
+                    <div class="value" id="wordCount">0</div>
+                </div>
+                <div class="score-box">
+                    <h4>Rank</h4>
+                    <div class="value rank" id="rank">Beginner</div>
+                </div>
+            </div>
+            
+            <div class="word-list">
+                <h3>Your Found Words</h3>
+                <div class="found-words" id="foundWords">
+                    <!-- Words will be added here dynamically -->
+                </div>
+            </div>
+            
+            <section class="rules">
+                <h2>How to Play SpellingBee</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2>SpellingBee Game Rules</h2>
+                        <ul>
+                            <li>Create words using the 7 letters provided</li>
+                            <li>Each word must contain the center letter</li>
+                            <li>Words must be at least 4 letters long</li>
+                            <li>Letters can be used more than once in a word</li>
+                            <li>Common English words only - no proper nouns</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h2>SpellingBee Scoring</h2>
+                        <ul>
+                            <li>4-letter words: 1 point</li>
+                            <li>Longer words: 1 point per letter</li>
+                            <li>Words using all 7 letters (pangrams): +7 bonus points</li>
+                            <li>Find all possible words to maximize your score!</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h2>SpellingBee Game Rankings</h2>
+                        <p>Based on your score, you can achieve different ranks:</p>
+                        <ul class="list-inline">
+                            <li class="list-inline-item me-3">Beginner</li>
+                            <li class="list-inline-item me-3">Good Start</li>
+                            <li class="list-inline-item me-3">Moving Up</li>
+                            <li class="list-inline-item me-3">Good</li>
+                            <li class="list-inline-item me-3">Solid</li>
+                            <li class="list-inline-item me-3">Nice</li>
+                            <li class="list-inline-item me-3">Great</li>
+                            <li class="list-inline-item me-3">Amazing</li>
+                            <li class="list-inline-item me-3">Genius</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="advantages mt-5">
+                <h2>Why Play SpellingBee?</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul>
+                            <li>Enhances vocabulary and word recognition</li>
+                            <li>Improves spelling skills</li>
+                            <li>Challenges your brain with word puzzles</li>
+                            <li>New set of letters every day for continuous enjoyment</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li>Family-friendly game suitable for all ages</li>
+                            <li>Track your progress with our ranking system</li>
+                            <li>Completely free to play online</li>
+                            <li>No registration or download required</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="game-mechanics mt-5">
+                <h2>SpellingBee Game Mechanics</h2>
+                <p>SpellingBee presents players with seven letters arranged in a hexagonal pattern, with one letter positioned at the center. Your challenge is to discover words that can be formed using these letters, with each word containing the central letter. Letters can be used repeatedly in a single word, offering endless possibilities. The game refreshes daily with a new letter set, keeping the challenge fresh and exciting!</p>
+            </section>
+
+            <section class="faq mt-5">
+                <h2>Frequently Asked Questions</h2>
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h3 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqOne">
+                                How often do the letters change?
+                            </button>
+                        </h3>
+                        <div id="faqOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                SpellingBee features a new set of seven letters every day, providing a fresh challenge for players.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqTwo">
+                                Are proper nouns allowed?
+                            </button>
+                        </h3>
+                        <div id="faqTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                No, proper nouns, hyphenated words, and obscure words are not included in our word list.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="more-games mt-5">
+                <h2>Explore More Word Games</h2>
+                <p>If you enjoy SpellingBee, you might also like these other popular word games:</p>
+                <ul>
+                    <li>Wordle - Guess the five-letter word in six tries</li>
+                    <li>Crosswords - Classic word puzzles with intersecting words</li>
+                    <li>Anagrams - Rearrange letters to form words</li>
+                    <li>Word Search - Find hidden words in a grid</li>
+                </ul>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 SpellBee.one - The ultimate spelling challenge word game. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Game variables
+            let currentWord = "";
+            let foundWords = [];
+            let score = 0;
+            let centerLetter = 'E'; // The required letter
+            
+            // DOM elements
+            const wordInput = document.getElementById('wordInput');
+            const messageEl = document.getElementById('message');
+            const scoreEl = document.getElementById('score');
+            const wordCountEl = document.getElementById('wordCount');
+            const rankEl = document.getElementById('rank');
+            const foundWordsEl = document.getElementById('foundWords');
+            const enterBtn = document.getElementById('enterBtn');
+            const deleteBtn = document.getElementById('deleteBtn');
+            const shuffleBtn = document.getElementById('shuffleBtn');
+            const hintsBtn = document.getElementById('hintsBtn');
+            const hiveButtons = document.querySelectorAll('.hive-cell');
+            
+            // Dictionary (sample words that can be made from PLEASANT)
+            // In a real implementation, you'd want a more comprehensive dictionary
+            const validWords = [
+                "PLEASE", "PLEASANT", "TEASE", "TEALS", "SEATS", "SLANT",
+                "STALE", "STEAL", "TALES", "TASTE", "TEASE", "ENANT",
+                "SLATE", "SPATE", "SPEAL", "SPELT", "SPENT", "STALE",
+                "STEAL", "STEEL", "PALE", "PANE", "PANT", "PAST", "PATE",
+                "PEAL", "PEAT", "PELT", "PENT", "PEST", "PLAN", "PLEA",
+                "SALE", "SALT", "SANE", "SEAT", "SEAL", "SENT", "SLAT",
+                "TALE", "TALL", "TEAL", "TELL", "EASE", "EAST", "EATS"
+            ];
+
+            // Game logic
+            function updateWordInput() {
+                wordInput.value = currentWord;
+            }
+            
+            function showMessage(msg, isError = false) {
+                messageEl.textContent = msg;
+                messageEl.style.color = isError ? '#d9534f' : '#5cb85c';
+                
+                // Clear message after 3 seconds
+                setTimeout(() => {
+                    messageEl.textContent = '';
+                }, 3000);
+            }
+            
+            function updateScore() {
+                scoreEl.textContent = score;
+                wordCountEl.textContent = foundWords.length;
+                updateRank();
+            }
+            
+            function updateRank() {
+                // Very basic ranking system - would be more sophisticated in real implementation
+                const ranks = [
+                    {min: 0, name: "Beginner"},
+                    {min: 5, name: "Good Start"},
+                    {min: 15, name: "Moving Up"},
+                    {min: 25, name: "Good"},
+                    {min: 40, name: "Solid"},
+                    {min: 50, name: "Nice"},
+                    {min: 70, name: "Great"},
+                    {min: 90, name: "Amazing"},
+                    {min: 120, name: "Genius"}
+                ];
+                
+                let currentRank = "Beginner";
+                for (const rank of ranks) {
+                    if (score >= rank.min) {
+                        currentRank = rank.name;
+                    } else {
+                        break;
+                    }
+                }
+                
+                rankEl.textContent = currentRank;
+            }
+            
+            function addWordToList(word) {
+                const wordEl = document.createElement('div');
+                wordEl.className = 'word-item';
+                wordEl.textContent = word;
+                foundWordsEl.appendChild(wordEl);
+            }
+            
+            function calculateWordScore(word) {
+                // 4-letter words = 1 point
+                // Longer words = 1 point per letter
+                // Pangram (uses all 7 letters) = bonus 7 points
+                let wordScore = word.length;
+                if (word.length === 4) {
+                    wordScore = 1;
+                }
+                
+                // Check if it's a pangram (contains all 7 unique letters)
+                const letters = ['P', 'L', 'E', 'A', 'S', 'N', 'T'];
+                const isPangram = letters.every(letter => word.includes(letter));
+                
+                if (isPangram) {
+                    wordScore += 7;
+                    showMessage("Pangram found! +7 bonus points!");
+                }
+                
+                return wordScore;
+            }
+            
+            function checkWord() {
+                const word = currentWord.toUpperCase();
+                
+                // Word must be at least 4 letters
+                if (word.length < 4) {
+                    showMessage("Word too short! Need at least 4 letters.", true);
+                    return;
+                }
+                
+                // Word must contain center letter
+                if (!word.includes(centerLetter)) {
+                    showMessage(`Word must contain the center letter ${centerLetter}!`, true);
+                    return;
+                }
+                
+                // Word shouldn't be already found
+                if (foundWords.includes(word)) {
+                    showMessage("You already found this word!", true);
+                    return;
+                }
+                
+                // Check if word is valid (in our dictionary)
+                if (validWords.includes(word)) {
+                    const wordScore = calculateWordScore(word);
+                    foundWords.push(word);
+                    score += wordScore;
+                    
+                    addWordToList(word);
+                    updateScore();
+                    showMessage(`+${wordScore} points!`);
+                    
+                    // Clear the input
+                    currentWord = "";
+                    updateWordInput();
+                } else {
+                    showMessage("Not in word list!", true);
+                }
+            }
+            
+            function shuffleHive() {
+                const letters = ['P', 'L', 'A', 'S', 'N', 'T'];
+                // Fisher-Yates shuffle
+                for (let i = letters.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [letters[i], letters[j]] = [letters[j], letters[i]];
+                }
+                
+                // Update outer cells (skip the center)
+                let letterIndex = 0;
+                hiveButtons.forEach(cell => {
+                    if (!cell.classList.contains('center')) {
+                        cell.textContent = letters[letterIndex];
+                        cell.dataset.letter = letters[letterIndex];
+                        letterIndex++;
+                    }
+                });
+            }
+            
+            function showHints() {
+                const totalPossibleWords = validWords.length;
+                const possibleScore = validWords.reduce((sum, word) => sum + calculateWordScore(word), 0);
+                
+                alert(`Hints:
+                - Total possible words: ${totalPossibleWords}
+                - Maximum possible score: ${possibleScore}
+                - Words found: ${foundWords.length}/${totalPossibleWords}
+                - Your score: ${score}/${possibleScore}`);
+            }
+            
+            // Event listeners
+            wordInput.addEventListener('input', function(e) {
+                currentWord = e.target.value.toUpperCase();
+            });
+            
+            enterBtn.addEventListener('click', checkWord);
+            
+            deleteBtn.addEventListener('click', function() {
+                currentWord = currentWord.slice(0, -1);
+                updateWordInput();
+            });
+            
+            shuffleBtn.addEventListener('click', shuffleHive);
+            
+            hintsBtn.addEventListener('click', showHints);
+            
+            hiveButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const letter = this.dataset.letter;
+                    currentWord += letter;
+                    updateWordInput();
+                });
+            });
+            
+            // Handle keyboard input
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    checkWord();
+                } else if (e.key === 'Backspace') {
+                    currentWord = currentWord.slice(0, -1);
+                    updateWordInput();
+                }
+            });
+            
+            // Initialize
+            updateScore();
+        });
+    </script>
+</body>
+</html> 
